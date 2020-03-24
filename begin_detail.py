@@ -15,7 +15,7 @@ try:
             'runspider',
             'prestospider_detail_page.py',
             '-o',
-            'out_detail.json',
+            'out_detail_95_98.json',
         ]
     )
 except SystemExit:

@@ -7,16 +7,19 @@ import json
 import numpy as np
 
 def entryUrls():
-    PERCENTILE_RATE = 98
+    PERCENTILE_UPPER_RATE = 98
+    PERCENTILE_LOWER_RATE = 95
+
     with open("./out.json","r") as f:
         infos = json.load(f)        
     base = 'https://www.prestomusic.com'
     q = '?award_winner=true&size=10&view=large&sort=relevance'
     list_of_urls = []
     counts = list(map(lambda entity: int(entity['count']), infos))
-    t = np.percentile(counts, PERCENTILE_RATE)
+    t1 = np.percentile(counts, PERCENTILE_UPPER_RATE)
+    t2 = np.percentile(counts, PERCENTILE_LOWER_RATE)
     for work in infos:
-        if int(work['count'])>t:
+        if int(work['count'])<t1 and int(work['count'])>=t2:
             url = work['url']
             list_of_urls.append(base + url + q)
     for next_url in list_of_urls:
@@ -84,6 +87,7 @@ class PrestoSpider(scrapy.Spider):
 
 
     def parse(self, response):
+        MAX_ALBUM_PER_WORK=3
 
         logging.info("SCRAPING '%s'" % response.url)
 
@@ -92,9 +96,11 @@ class PrestoSpider(scrapy.Spider):
         composer = response.css('.c-browse__header-info > p > a::text').get()
         recommended_exists = len(response.css('.c-product__recommendation')) > 0
         if recommended_exists:
+            c = 0
             for item in items:
                 recommended = len(item.css('.c-product__recommendation')) > 0
-                if recommended: 
+                if recommended and c <= MAX_ALBUM_PER_WORK: 
+                    c+=1
                     yield self.process_item(item, composer, work, True)
         elif len(items)>0:
                 yield self.process_item(items[0], composer, work, False)
