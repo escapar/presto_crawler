@@ -1,11 +1,11 @@
 import scrapy
 from scrapy import Request
+from scrapy import Selector
 import logging
 import requests
-from scrapy import Selector
 
 def entryUrls():
-    base = 'https://prestomusic.com'
+    base = 'https://www.prestomusic.com'
     res = requests.get("https://www.prestomusic.com/classical/composers")
     sel = Selector(res)
     list_of_urls = []
@@ -28,7 +28,6 @@ class PrestoSpider(scrapy.Spider):
 
         request = Request(start_url, dont_filter=True)
 
-        ### important to yield, not return (not sure why return doesn't work here)
         yield request
 
 

@@ -13,9 +13,9 @@ try:
         [
             'scrapy',
             'runspider',
-            'prestospider.py',
+            'prestospider_detail_page.py',
             '-o',
-            'out.json',
+            'out_detail.json',
         ]
     )
 except SystemExit:
