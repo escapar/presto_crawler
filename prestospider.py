@@ -40,7 +40,13 @@ class PrestoSpider(scrapy.Spider):
         composer = profile_block[0].get()
         for entity in col.css('a'):
             txts = entity.css('::text')
-            yield {'composer':composer,'title':txts[0].get(),'count':txts[1].get().replace('(','').replace(')',''),'url':entity.attrib['href']}
+            title = ''
+            count = ''
+            if len(txts)>0:
+                title = txts[0].get()
+            if len(txts) > 1:
+                count = txts[1].get().replace('(','').replace(')','')
+            yield {'composer':composer,'title':title,'count':count,'url':entity.attrib['href']}
 
         next_url = self.url.__next__()
         yield Request(next_url)
